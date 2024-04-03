@@ -2,77 +2,58 @@ class Vacancy:
     """
     Информация о вакансии
     """
-    def __init__(self, vacancy_title, city, salary_from, salary_to, type_of_employment, url):
+
+    def __init__(self, vacancy_title, town, salary_from, salary_to, requirement, url):
         self.vacancy_title: str = vacancy_title
-        self.city: str = city
+        self.town: str = town
         self.salary_from: int = salary_from
         self.salary_to: int = salary_to
-        self.type_of_employment: str = type_of_employment
+        self.requirement: str = requirement
+        self.validate_requirement()
         self.url: str = url
+
+    def validate_requirement(self):
+        if not self.requirement:
+            self.requirement = 'Описание не указано'
 
     def __str__(self):
         return f'название вакансии: {self.vacancy_title}\n' \
-               f'город: {self.city}\n' \
+               f'город: {self.town}\n' \
                f'зарплата от: {self.salary_from}\n' \
                f'зарплата до: {self.salary_to}\n' \
-               f'тип занятости: {self.type_of_employment}\n' \
+               f'требование: {self.requirement}\n' \
                f'ссылка: {self.url}\n'
 
-    def to_dict(self):
-        """
-        Возвращает вакансию в виде словаря
-        """
-        return {
-            'vacancy_title': self.vacancy_title,
-            'town': self.city,
-            'salary_from': self.salary_from,
-            'salary_to': self.salary_to,
-            'employment': self.type_of_employment,
-            'url': self.url
-        }
 
-    @staticmethod
-    def from_dict(vacancy_dict):
+    @classmethod
+    def from_dict(cls, vacancy_list):
         """
         Возвращает вакансию в виде списка
         """
-        return Vacancy(
-            vacancy_dict['vacancy_title'],
-            vacancy_dict['town'],
-            vacancy_dict['salary_from'],
-            vacancy_dict['salary_to'],
-            vacancy_dict['employment'],
-            vacancy_dict['url']
-        )
+        current_list = []
+        for vacancy_dict in vacancy_list:
+            current_list.append(
+                cls(
+                    vacancy_dict['vacancy_title'],
+                    vacancy_dict['town'],
+                    vacancy_dict['salary_from'],
+                    vacancy_dict['salary_to'],
+                    vacancy_dict['requirement'],
+                    vacancy_dict['url']
+                ))
+        return current_list
+
+    def get_salary(self):
+        if self.salary_from and self.salary_to:
+            res_salary = round((self.salary_from + self.salary_to)/2)
+        elif not self.salary_from:
+            res_salary = self.salary_to
+        else:
+            res_salary = self.salary_from
+        return res_salary
 
     def __lt__(self, other):
         if not isinstance(other, Vacancy):
             raise TypeError('Вакансию можно сравнивать только с вакансией')
-        return self.salary_from < other.salary_from
+        return self.get_salary() < other.get_salary()
 
-
-class Vacancies:
-    """ Обработка списка всех вакансий"""
-
-    def __init__(self):
-        self.__all_vacancies = []
-
-    def add_vacancies(self, new_vacancies):
-        self.__all_vacancies += new_vacancies
-
-    def delete_vacancies(self, old_vacancies):
-        for i in old_vacancies:
-            self.__all_vacancies.remove(i)
-
-    def sort_vacancies_by_salary(self):
-        self.__all_vacancies.sort(reverse=True)
-
-    @property
-    def all_vacancies(self):
-        return self.__all_vacancies
-
-    def to_list_dict(self):
-        dict_vacancies = []
-        for i in self.__all_vacancies:
-            dict_vacancies.append(i.to_dict())
-        return dict_vacancies
