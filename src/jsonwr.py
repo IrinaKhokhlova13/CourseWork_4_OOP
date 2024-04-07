@@ -1,9 +1,9 @@
 import json
 from pathlib import Path
 from config import ROOT_DIR
+from src.abstract_classes import JsonWR
 
-
-class JsonWriteReader:
+class JsonWriteReader(JsonWR):
     """
     Запись и чтение json файл
     """
@@ -14,7 +14,8 @@ class JsonWriteReader:
             with open(self.file_path, 'w', encoding='utf-8') as file:
                 json.dump([], file)
 
-    def add_vacancy(self, vacancy_list):
+
+    def file_reader_writer(self, vacancy_list):
         with open(self.file_path, 'r', encoding='utf-8') as file:
             vacancies = json.load(file)
             for vacancy in vacancy_list:
@@ -29,3 +30,7 @@ class JsonWriteReader:
                 vacancies.append(current_dict)
             with open(self.file_path, 'w', encoding='utf-8') as file_1:
                 json.dump(vacancies, file_1)
+
+
+    def add_vacancy(self, vacancy_list):
+        self.file_reader_writer(vacancy_list)

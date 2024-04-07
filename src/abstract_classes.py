@@ -15,9 +15,5 @@ class JsonWR(ABC):
     Запись полученных вакансий в файл json и чтение
     """
     @abstractmethod
-    def file_writer(self):
-        pass
-
-    @abstractmethod
-    def file_reader(self):
+    def file_reader_writer(self):
         pass
